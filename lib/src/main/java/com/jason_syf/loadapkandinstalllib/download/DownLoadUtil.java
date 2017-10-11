@@ -24,13 +24,42 @@ public enum DownLoadUtil {
     insrance;
     public static final String MESSAGE_PROGRESS = "message_progress";
     private String apkUrl ;
-    public static final String APP_NAME = "testDownLoad";
+    private String apk_name;
+
+    public String getNotificationTitle() {
+        return notificationTitle;
+    }
+
+    public void setNotificationTitle(String notificationTitle) {
+        this.notificationTitle = notificationTitle;
+    }
+
+    public String getNotificationContent() {
+        return notificationContent;
+    }
+
+    public void setNotificationContent(String notificationContent) {
+        this.notificationContent = notificationContent;
+    }
+
+    public int getNotificationIcon() {
+        return notificationIcon;
+    }
+
+    public void setNotificationIcon(int notificationIcon) {
+        this.notificationIcon = notificationIcon;
+    }
+
+    private String notificationTitle;
+    private String notificationContent;
+    private int notificationIcon;
 
 
 
 
-    public void startInstall(Context context,String apkUrl ) {
+    public void startInstall(Context context,String apkUrl ,String apkName) {
         this.apkUrl = apkUrl;
+        this.apk_name = apkName;
         Intent intent = new Intent(context, DownFileService.class);
         context.startService(intent);
     }
@@ -50,7 +79,7 @@ public enum DownLoadUtil {
     //安装
     public void installAPK(Context context) {
         File file = new File(Environment.getExternalStorageDirectory()
-                , APP_NAME + ".apk");
+                , apk_name + ".apk");
         if(file.exists()){
             openFile(file,context);
         }else{
@@ -92,5 +121,9 @@ public enum DownLoadUtil {
         String var3 = var2.substring(var2.lastIndexOf(".") + 1, var2.length()).toLowerCase();
         var1 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(var3);
         return var1;
+    }
+
+    public String getApk_name() {
+        return apk_name;
     }
 }

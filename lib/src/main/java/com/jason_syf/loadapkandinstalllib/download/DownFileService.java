@@ -22,7 +22,6 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
-import static com.jason_syf.loadapkandinstalllib.download.DownLoadUtil.APP_NAME;
 import static com.jason_syf.loadapkandinstalllib.download.DownLoadUtil.MESSAGE_PROGRESS;
 
 /**
@@ -91,7 +90,7 @@ public class DownFileService extends IntentService {
             }
         };
 //      安装包名
-        String fileName = APP_NAME + ".apk";
+        String fileName = DownLoadUtil.insrance.getApk_name() + ".apk";
         File outputFile = new File(Environment.getExternalStorageDirectory()
 //                (Environment.DIRECTORY_DOWNLOADS)
                 , fileName);
