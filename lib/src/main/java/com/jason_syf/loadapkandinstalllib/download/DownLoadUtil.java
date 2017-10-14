@@ -30,24 +30,27 @@ public enum DownLoadUtil {
         return notificationTitle;
     }
 
-    public void setNotificationTitle(String notificationTitle) {
-        this.notificationTitle = notificationTitle;
-    }
-
     public String getNotificationContent() {
         return notificationContent;
-    }
-
-    public void setNotificationContent(String notificationContent) {
-        this.notificationContent = notificationContent;
     }
 
     public int getNotificationIcon() {
         return notificationIcon;
     }
 
-    public void setNotificationIcon(int notificationIcon) {
+    public DownLoadUtil setNotificationTitle(String notificationTitle) {
+        this.notificationTitle = notificationTitle;
+        return this;
+    }
+
+    public DownLoadUtil setNotificationContent(String notificationContent) {
+        this.notificationContent = notificationContent;
+        return this;
+    }
+
+    public DownLoadUtil setNotificationIcon(int notificationIcon) {
         this.notificationIcon = notificationIcon;
+        return this;
     }
 
     private String notificationTitle;
@@ -57,11 +60,12 @@ public enum DownLoadUtil {
 
 
 
-    public void startInstall(Context context,String apkUrl ,String apkName) {
+    public DownLoadUtil startInstall(Context context,String apkUrl ,String apkName) {
         this.apkUrl = apkUrl;
         this.apk_name = apkName;
         Intent intent = new Intent(context, DownFileService.class);
         context.startService(intent);
+        return this;
     }
 
 

@@ -62,11 +62,18 @@ public class DownFileService extends IntentService {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 //     通知初始化
         receiver = new DownloadCompleteReceiver();
+
+        int pic;
+        if (DownLoadUtil.insrance.getNotificationIcon() == -1) {
+            pic = R.mipmap.down;
+        } else {
+            pic = DownLoadUtil.insrance.getNotificationIcon();
+        }
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.down))
-                .setContentTitle("下载")
-                .setContentText("正在下载应用")
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),pic))
+                .setContentTitle(DownLoadUtil.insrance.getNotificationTitle()==null?"下载":DownLoadUtil.insrance.getNotificationTitle())
+                .setContentText(DownLoadUtil.insrance.getNotificationContent()==null?"正在下载应用":DownLoadUtil.insrance.getNotificationContent())
                 .setAutoCancel(true);
         notificationManager.notify(0, notificationBuilder.build());
         download();
