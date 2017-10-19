@@ -48,11 +48,13 @@ public class FileUtils {
      * @param file
      */
     public static void writeFile(InputStream in, File file) throws IOException {
-        if (!file.getParentFile().exists())
+        if (!file.getParentFile().exists()){
             file.getParentFile().mkdirs();
+        }
 
-        if (file != null && file.exists())
+        if (file != null && file.exists()) {
             file.delete();
+        }
 
         FileOutputStream out = new FileOutputStream(file);
         byte[] buffer = new byte[1024 * 128];
@@ -73,8 +75,9 @@ public class FileUtils {
      * @author YOLANDA
      */
     public static byte[] bmpToByteArray(Bitmap bmp) {
-        if (bmp == null)
+        if (bmp == null) {
             return null;
+        }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 80, output);
 
@@ -107,16 +110,17 @@ public class FileUtils {
         }
     }
 
-    /*
-    * 根据view来生成bitmap图片，可用于截图功能
-    */
+    /**
+     * 根据view来生成bitmap图片，可用于截图功能
+     * @param v   View
+     * @return Bitmap
+     */
     public static Bitmap getViewBitmap(View v) {
 
-        v.clearFocus(); //
+        v.clearFocus();
 
-        v.setPressed(false); //
+        v.setPressed(false);
         // 能画缓存就返回false
-
         boolean willNotCache = v.willNotCacheDrawing();
         v.setWillNotCacheDrawing(false);
 

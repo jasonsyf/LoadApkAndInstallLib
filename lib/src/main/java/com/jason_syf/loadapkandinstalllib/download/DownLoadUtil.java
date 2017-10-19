@@ -21,6 +21,9 @@ import java.io.File;
 
 public enum DownLoadUtil {
 
+    /**
+     * DownLoadUtil的唯一单例
+     */
     insrance;
     public static final String MESSAGE_PROGRESS = "message_progress";
     private String apkUrl ;
@@ -80,7 +83,9 @@ public enum DownLoadUtil {
 
     }
 
-    //安装
+    /** 安装
+     * @param context  场景
+     */
     public void installAPK(Context context) {
         File file = new File(Environment.getExternalStorageDirectory()
                 , apk_name + ".apk");

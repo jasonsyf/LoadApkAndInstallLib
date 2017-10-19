@@ -12,6 +12,10 @@ import retrofit2.http.Url;
  */
 
 public interface DownloadApi {
+    /**   down接口
+     * @param url 下载更新APK的URL
+     * @return  string
+     */
     @Streaming
     @GET
     Observable<ResponseBody> download(@Url String url);
