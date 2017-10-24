@@ -70,7 +70,7 @@ public class DownFileService extends IntentService {
             pic = DownLoadUtil.insrance.getNotificationIcon();
         }
         notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.down)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),pic))
                 .setContentTitle(DownLoadUtil.insrance.getNotificationTitle()==null?"下载":DownLoadUtil.insrance.getNotificationTitle())
                 .setContentText(DownLoadUtil.insrance.getNotificationContent()==null?"正在下载应用":DownLoadUtil.insrance.getNotificationContent())
