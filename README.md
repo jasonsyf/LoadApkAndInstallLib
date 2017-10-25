@@ -1,3 +1,4 @@
+[![Release](https://jitpack.io/v/jasonsyf/LoadApkAndInstallLib.svg)](https://jitpack.io/#jasonsyf/LoadApkAndInstallLib)
 # LoadApkAndInstallLib
 APK下载安装第三方库，已上传至jitpack.io
 基于rxjava,retrofit的apk下载安装demo（适配android7.0）
