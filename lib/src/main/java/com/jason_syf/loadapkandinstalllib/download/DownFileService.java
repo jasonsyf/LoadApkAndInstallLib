@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,15 +33,20 @@ import static com.jason_syf.loadapkandinstalllib.download.DownLoadUtil.MESSAGE_P
  * Email:jason_sunyf@163.com
  */
 
-public class DownFileService extends IntentService {
+public class DownFileService extends IntentService  {
     private static final String TAG = "DownloadApi";
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager notificationManager;
     int downloadCount = 0;
+    public static final int DOWNLOAD_START = 0;
+    public static final int DOWNLOAD_COMPLETE = 1;
+    public static final int DOWNLOAD_ERROR = 2;
     private DownloadCompleteReceiver receiver;
+    private Messenger mMessenger;
 
     public DownFileService() {
         super("DownloadApi");
+
     }
 
     class DownloadCompleteReceiver extends BroadcastReceiver {
@@ -47,7 +56,7 @@ public class DownFileService extends IntentService {
                 DownLoadBean download = intent.getParcelableExtra("download");
                 if (download.getCurrentFileSize() == download.getTotalFileSize()) {
                     Toast.makeText(context, "下载完成", Toast.LENGTH_SHORT).show();
-                    DownLoadUtil.insrance.installAPK(context);
+                    DownLoadUtil.getInstance().installAPK(context);
                 } else {
                     Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
                 }
@@ -64,20 +73,20 @@ public class DownFileService extends IntentService {
         receiver = new DownloadCompleteReceiver();
 
         int pic;
-        if (DownLoadUtil.insrance.getNotificationIcon() == -1) {
+        if (DownLoadUtil.getInstance().getNotificationIcon() == -1) {
             pic = R.mipmap.down;
         } else {
-            pic = DownLoadUtil.insrance.getNotificationIcon();
+            pic = DownLoadUtil.getInstance().getNotificationIcon();
         }
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),pic))
-                .setContentTitle(DownLoadUtil.insrance.getNotificationTitle()==null?"下载":DownLoadUtil.insrance.getNotificationTitle())
-                .setContentText(DownLoadUtil.insrance.getNotificationContent()==null?"正在下载应用":DownLoadUtil.insrance.getNotificationContent())
+                .setContentTitle(DownLoadUtil.getInstance().getNotificationTitle()==null?"下载":DownLoadUtil.getInstance().getNotificationTitle())
+                .setContentText(DownLoadUtil.getInstance().getNotificationContent()==null?"正在下载应用":DownLoadUtil.getInstance().getNotificationContent())
                 .setAutoCancel(true);
         notificationManager.notify(0, notificationBuilder.build());
         download();
-        DownLoadUtil.insrance.registerReceiver(this, receiver);
+        DownLoadUtil.getInstance().registerReceiver(this, receiver);
     }
 
     private void download() {
@@ -97,7 +106,7 @@ public class DownFileService extends IntentService {
             }
         };
 //      安装包名
-        String fileName = DownLoadUtil.insrance.getApk_name() + ".apk";
+        String fileName = DownLoadUtil.getInstance().getApk_name() + ".apk";
         File outputFile = new File(Environment.getExternalStorageDirectory()
 //                (Environment.DIRECTORY_DOWNLOADS)
                 , fileName);
@@ -106,24 +115,50 @@ public class DownFileService extends IntentService {
             outputFile.delete();
         }
 
-        String baseUrl = StringUtils.getHostName(DownLoadUtil.insrance.getApkUrl());
-        new DownLoadOperate(baseUrl, listener).downloadAPK(DownLoadUtil.insrance.getApkUrl(), outputFile, new Observer() {
+        String baseUrl = StringUtils.getHostName(DownLoadUtil.getInstance().getApkUrl());
+        new DownLoadOperate(baseUrl, listener).downloadAPK(DownLoadUtil.getInstance().getApkUrl(), outputFile, new Observer() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
+                Message msg = new Message();
+                msg.obj = "开始下载";
+                msg.what = DOWNLOAD_START;
+                try {
+                    mMessenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onNext(@NonNull Object o) {
+
             }
+
 
             @Override
             public void onComplete() {
+                Message msg = new Message();
+                msg.obj = "下载完成";
+                msg.what = DOWNLOAD_COMPLETE;
                 downloadCompleted("下载完成");
+                try {
+                    mMessenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
+                Message msg = new Message();
+                msg.obj = "下载出错";
+                msg.what = DOWNLOAD_ERROR;
+                try {
+                    mMessenger.send(msg);
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
                 notificationManager.cancel(0);
                 notificationBuilder.setProgress(0, 0, false);
                 notificationBuilder.setContentText("下载出错");
@@ -165,5 +200,15 @@ public class DownFileService extends IntentService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         notificationManager.cancel(0);
+    }
+
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (mMessenger == null) {
+            mMessenger = (Messenger) intent.getExtras().get("messenger");
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 }
